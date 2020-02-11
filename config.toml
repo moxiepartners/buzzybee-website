@@ -1,3 +1,4 @@
-baseURL = "https://buzzybee.be/"
+baseURL = "http://buzzybee.be"
 languageCode = "nl-be"
 title = "Buzzy Bee"
+theme = "buzzybee"
