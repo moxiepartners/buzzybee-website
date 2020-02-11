@@ -1,0 +1,10 @@
+header {
+    height: 579px;
+    background-image: url("../../images/buzz.jpg");
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.homepage-content {
+    text-align: center;
+}
