@@ -37,4 +37,4 @@ steps:
     azureSubscription: 'Microsoft Partner Network(1)(9f9311cf-d0ca-4526-8677-69c74798c84e)'
     Destination: 'AzureBlob'
     storage: 'buzzybeewebsite'
-    ContainerName: '$web''
+    ContainerName: '$web'
