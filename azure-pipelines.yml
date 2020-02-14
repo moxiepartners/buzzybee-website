@@ -9,36 +9,28 @@ trigger:
 jobs:
 - job: Linux
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'windows-2019'
 
-  variables:
-    hugo.version: '0.64.1'
-    blog.path: '.'
+steps:
+- task: giuliovdev.hugo-extension.hugo-build-task.HugoTask@1
+  displayName: 'Hugo generate '
+  inputs:
+    destination: '$(Build.ArtifactStagingDirectory)'
 
-  steps:
-  - checkout: self
-    displayName: 'Checkout repository including submodules'
-    submodules: true  # true so Hugo theme submodule is checked out
-
-  - script:
-    wget -c https://github.com/gohugoio/hugo/releases/download/v$(hugo.version)/hugo_$(hugo.version)_Linux-64bit.deb
-    displayName: "Download HUGO"
-
-  - script: 'sudo dpkg -i hugo_$(hugo.version)_Linux-64bit.deb'
-    displayName: "Install HUGO"
-
-  - script:
-    cd $(blog.path)
-    hugo --log --verboseLog --config config.toml
-    displayName: 'Generate Website'
-
-- job: Windows
-
-  steps:
-  - task: AzureFileCopy@3
-    inputs:
-      SourcePath: '$(blog.path)/public'
-      azureSubscription: 'Microsoft Partner Network(1)(9f9311cf-d0ca-4526-8677-69c74798c84e)'
-      Destination: 'AzureBlob'
-      storage: 'buzzybeewebsite'
-      ContainerName: '$web'
+- task: AzureFileCopy@2
+  displayName: 'AzureBlob File Copy'
+  inputs:
+    SourcePath: '$(Build.ArtifactStagingDirectory)'
+    azureSubscription: 'Microsoft Partner Network (9f9311cf-d0ca-4526-8677-69c74798c84e)'
+    Destination: AzureBlob
+    storage: buzzybeewebsite
+    ContainerName: '$web'
+	
+- task: fabienlavocat.FabienLavocat-PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint@2
+  displayName: 'Purge Azure CDN Endpoint'
+  inputs:
+    ConnectedServiceNameSelector: ConnectedServiceNameARM
+    ConnectedServiceNameARM: 'Microsoft Partner Network(1)(9f9311cf-d0ca-4526-8677-69c74798c84e)'
+    ResourceGroupName: barrit
+    EndpointName: buzzybee
+    ProfileName: 'barrit-cdn'
