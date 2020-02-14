@@ -6,14 +6,39 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-16.04'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  variables:
+    hugo.version: '0.64.1'
+    blog.path: '.'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  steps:
+  - checkout: self
+    displayName: 'Checkout repository including submodules'
+    submodules: true  # true so Hugo theme submodule is checked out
+
+  - script:
+    wget -c https://github.com/gohugoio/hugo/releases/download/v$(hugo.version)/hugo_$(hugo.version)_Linux-64bit.deb
+    displayName: "Download HUGO"
+
+  - script: 'sudo dpkg -i hugo_$(hugo.version)_Linux-64bit.deb'
+    displayName: "Install HUGO"
+
+  - script:
+    cd $(blog.path)
+    hugo --log --verboseLog --config config.toml
+    displayName: 'Generate Website'
+
+- job: Windows
+
+  steps:
+  - task: AzureFileCopy@3
+    inputs:
+      SourcePath: '$(blog.path)/public'
+      azureSubscription: 'Microsoft Partner Network(1)(9f9311cf-d0ca-4526-8677-69c74798c84e)'
+      Destination: 'AzureBlob'
+      storage: 'buzzybeewebsite'
+      ContainerName: '$web'
