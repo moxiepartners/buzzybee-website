@@ -5,6 +5,16 @@ header {
     background-repeat: no-repeat;
     background-size: contain;
 }
+
+.footer {
+    text-align: center;
+}
+
 .homepage-content {
     text-align: center;
+}
+
+.social-icon{
+    color: rgba(0,0,0,.44);
+    font-size:1.5rem;
 }
